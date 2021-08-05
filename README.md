@@ -5,6 +5,8 @@ to build phasing/4D application.
 
 ![Screenshot](./screenshot.png)
 
+[Live demo](https://forge-phasing-poc.herokuapp.com)
+
 ## Development
 
 ### Prerequisites
