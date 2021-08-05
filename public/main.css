@@ -1,0 +1,9 @@
+body, html {
+    height: 100vh;
+    font-family: ArtifaktElement; /* Will be provided by Forge Viewer */
+}
+
+#timeline {
+    overflow-y: scroll;
+    padding: 0.5em;
+}

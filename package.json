@@ -1,0 +1,22 @@
+{
+  "name": "forge-phasing-poc",
+  "version": "1.0.0",
+  "description": "Sample Autodesk Forge application providing phasing/4D preview.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "autodesk",
+    "forge",
+    "express"
+  ],
+  "author": "Petr Broz <petr.broz@autodesk.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/forge-viewer": "^7.48.0"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "forge-server-utils": "^8.3.2"
+  }
+}
