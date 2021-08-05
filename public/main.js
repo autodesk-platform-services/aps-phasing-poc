@@ -10,7 +10,7 @@ Autodesk.Viewing.Initializer({ getAccessToken }, async function () {
     viewer.start();
     viewer.setTheme('light-theme');
     viewer.addEventListener(Autodesk.Viewing.GEOMETRY_LOADED_EVENT, async function (ev) {
-        const activityMap = await getActivityMapping(viewer.model, ACTIVITY_PROPERTY);
+        const activityMap = await getActivityMap(viewer.model, ACTIVITY_PROPERTY);
         const phasingData = await getPhasingData();
         setupTimelineInput(viewer, phasingData, activityMap);
         setupTimelineChart(viewer, phasingData, activityMap);
@@ -47,19 +47,34 @@ async function getPhasingData() {
     }
     const lines = (await resp.text()).split('\n');
     lines.shift(); // Remove the header row
-    return lines.map(line => {
+    let result = {
+        groups: {},
+        startDate: null,
+        endDate: null
+    };
+    for (const line of lines) {
         const tokens = line.trim().split(',');
-        return {
-            id: tokens[0].trim(),
-            start_date: new Date(tokens[1]),
-            end_date: new Date(tokens[3]),
-            activity: tokens[4].trim(),
+        const groupName = tokens[0].trim();
+        const startDate = new Date(tokens[1]);
+        const endDate = new Date(tokens[3]);
+        if (!result.startDate || startDate < result.startDate) {
+            result.startDate = startDate;
+        }
+        if (!result.endDate || endDate > result.endDate) {
+            result.endDate = endDate;
+        }
+        result.groups[groupName] = result.groups[groupName] || [];
+        result.groups[groupName].push({
+            startDate,
+            endDate,
+            type: tokens[4].trim(),
             description: tokens[5].trim()
-        };
-    });
+        });
+    }
+    return result;
 }
 
-async function getActivityMapping(model, propertyName) {
+async function getActivityMap(model, propertyName) {
     function userFunction(pdb, attrName) {
         let map = new Map(); // mapping of activityID to list of dbIDs
         pdb.enumObjects(dbid => {
@@ -77,23 +92,13 @@ async function getActivityMapping(model, propertyName) {
 }
 
 function setupTimelineInput(viewer, phasingData, activityMap) {
-    let startDate = phasingData[0].start_date;
-    let endDate = phasingData[0].end_date;
-    for (let i = 1, len = phasingData.length; i < len; i++) {
-        if (phasingData[i].start_date < startDate) {
-            startDate = phasingData[i].start_date;
-        }
-        if (phasingData[i].end_date > endDate) {
-            endDate = phasingData[i].end_date;
-        }
-    }
-    const days = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    const days = Math.round((phasingData.endDate.getTime() - phasingData.startDate.getTime()) / (1000 * 60 * 60 * 24));
     const input = document.getElementById('timeline-input');
     const label = document.getElementById('timeline-label');
     input.min = 0;
     input.max = days;
     input.oninput = () => {
-        const currentDate = new Date(startDate.getTime() + input.value * 24 * 60 * 60 * 1000);
+        const currentDate = new Date(phasingData.startDate.getTime() + input.value * 24 * 60 * 60 * 1000);
         label.innerText = currentDate.toLocaleDateString();
         // Color, show, and hide objects based on custom rules
         viewer.model.clearThemingColors();
@@ -101,56 +106,62 @@ function setupTimelineInput(viewer, phasingData, activityMap) {
         const yellow = new THREE.Vector4(1.0, 1.0, 0.0, 0.5);
         const red = new THREE.Vector4(1.0, 0.0, 0.0, 0.5);
         const blue = new THREE.Vector4(0.0, 0.0, 1.0, 0.5);
-        for (const phase of phasingData) {
-            switch (phase.activity) {
-                case 'Construct':
-                    if (currentDate < phase.start_date) {
-                        viewer.hide(activityMap.get(phase.id));
-                    } else if (currentDate < phase.end_date) {
-                        for (const dbid of activityMap.get(phase.id) || []) {
+        for (const [group, activities] of Object.entries(phasingData.groups)) {
+            for (const activity of activities) {
+                const dbids = activityMap.get(group) || [];
+                if (activity.type === 'Construct') {
+                    if (currentDate < activity.startDate) {
+                        viewer.hide(dbids);
+                        break;
+                    } else if (currentDate <= activity.endDate) {
+                        viewer.show(dbids);
+                        for (const dbid of dbids) {
                             viewer.setThemingColor(dbid, yellow);
                         }
+                        break;
                     } else {
-                        // ...
+                        viewer.show(dbids);
                     }
-                    break;
-                case 'Demo':
-                    if (currentDate < phase.start_date) {
-                        // ...
-                    } else if (currentDate < phase.end_date) {
-                        for (const dbid of activityMap.get(phase.id) || []) {
+                } else if (activity.type === 'Demo') {
+                    if (currentDate < activity.startDate) {
+                        viewer.show(dbids);
+                        break;
+                    } else if (currentDate <= activity.endDate) {
+                        viewer.show(dbids);
+                        for (const dbid of dbids) {
                             viewer.setThemingColor(dbid, red);
                         }
+                        break;
                     } else {
-                        viewer.hide(activityMap.get(phase.id));
+                        viewer.hide(dbids);
                     }
-                    break;
-                case 'Temp':
-                    if (currentDate < phase.start_date) {
-                        viewer.hide(activityMap.get(phase.id));
-                    } else if (currentDate < phase.end_date) {
-                        for (const dbid of activityMap.get(phase.id) || []) {
+                } else if (activity.type === 'Temp') {
+                    if (currentDate < activity.startDate) {
+                        viewer.hide(dbids);
+                        break;
+                    } else if (currentDate <= activity.endDate) {
+                        viewer.show(dbids);
+                        for (const dbid of dbids) {
                             viewer.setThemingColor(dbid, blue);
                         }
+                        break;
                     } else {
-                        // ...
+                        viewer.show(dbids);
                     }
-                    break;
+                }
             }
         }
     };
 }
 
 function setupTimelineChart(viewer, phasingData, activityMap) {
-    const timelineData = phasingData.map(phase => {
+    const timelineData = Object.keys(phasingData.groups).map(group => {
         return {
-            label: phase.id,
-            times: [
-                {
-                    starting_time: phase.start_date.getTime(),
-                    ending_time: phase.end_date.getTime()
-                }
-            ]
+            label: group,
+            times: phasingData.groups[group].map(activity => ({
+                starting_time: activity.startDate.getTime(),
+                ending_time: activity.endDate.getTime()
+            }))
         };
     });
     const width = 500;
