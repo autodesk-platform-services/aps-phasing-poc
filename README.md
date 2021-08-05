@@ -3,6 +3,8 @@
 Proof-of-concept showing how [Autodesk Forge](https://forge.autodesk.com) can be used
 to build phasing/4D application.
 
+![Screenshot](./screenshot.png)
+
 ## Development
 
 ### Prerequisites
