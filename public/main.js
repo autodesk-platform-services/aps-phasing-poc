@@ -160,12 +160,16 @@ function setupTimelineChart(viewer, phasingData, activityMap) {
             label: group,
             times: phasingData.groups[group].map(activity => ({
                 starting_time: activity.startDate.getTime(),
-                ending_time: activity.endDate.getTime()
+                ending_time: activity.endDate.getTime(),
+                activity_type: activity.type
             }))
         };
     });
     const width = 500;
+    const colors = d3.scale.ordinal().range(['#E6DB2C','#E63E6A','#73C9E6']).domain(['Construct','Demo','Temp']);
     const chart = d3.timeline()
+        .colors(colors)
+        .colorProperty('activity_type')
         .width(width)
         .stack()
         .margin({ left: 0, right: 0, top: 0, bottom: 0 })
