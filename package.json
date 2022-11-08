@@ -1,13 +1,12 @@
 {
-  "name": "forge-phasing-poc",
+  "name": "aps-phasing-poc",
   "version": "1.0.0",
-  "description": "Sample Autodesk Forge application providing phasing/4D preview.",
+  "description": "Sample Autodesk Platform Services application providing phasing/4D preview.",
   "scripts": {
     "start": "node server.js"
   },
   "keywords": [
-    "autodesk",
-    "forge",
+    "autodesk-platform-services",
     "express"
   ],
   "author": "Petr Broz <petr.broz@autodesk.com>",

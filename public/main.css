@@ -1,6 +1,10 @@
 body, html {
     height: 100vh;
-    font-family: ArtifaktElement; /* Will be provided by Forge Viewer */
+    font-family: ArtifaktElement;
+}
+
+.navbar-brand img {
+    margin-right: 1em;
 }
 
 #timeline {

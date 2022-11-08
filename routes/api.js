@@ -1,12 +1,12 @@
 const express = require('express');
 const { AuthenticationClient } = require('forge-server-utils');
 
-const { FORGE_CLIENT_ID, FORGE_CLIENT_SECRET } = process.env;
+const { APS_CLIENT_ID, APS_CLIENT_SECRET } = process.env;
 
-let authClient = new AuthenticationClient(FORGE_CLIENT_ID, FORGE_CLIENT_SECRET);
+let authClient = new AuthenticationClient(APS_CLIENT_ID, APS_CLIENT_SECRET);
 let router = express.Router();
 
-// GET /api/auth/token - provides an access token to be used by Forge Viewer
+// GET /api/auth/token - provides an access token to be used by the Viewer
 router.get('/api/auth/token', async (req, res) => {
     try {
         res.json(await authClient.authenticate(['viewables:read']));
