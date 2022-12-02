@@ -1,9 +1,9 @@
-# aps-phasing-poc
+# Phasing Demo
 
 Proof-of-concept showing how [Autodesk Platform Services](https://aps.autodesk.com) can be used
 to build phasing/4D application.
 
-![Screenshot](./screenshot.png)
+![Screenshot](./thumbnail.png)
 
 Live demo: https://aps-phasing-poc.autodesk.io
 

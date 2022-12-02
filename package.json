@@ -9,7 +9,6 @@
     "autodesk-platform-services",
     "express"
   ],
-  "author": "Petr Broz <petr.broz@autodesk.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/forge-viewer": "^7.48.0"
