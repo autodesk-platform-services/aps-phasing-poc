@@ -3,7 +3,7 @@
 const DESIGN_URN = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6amFjb2JzNGQtcG9jL0JyaWRnZV9Nb2RlbC5kd2c';
 const DESIGN_GUID = '3bb36b05-6fb7-1fd0-3c58-d83a4e8d4042';
 const ACTIVITY_PROPERTY = 'Custom 4D Phasing Set - ActivityID';
-const PHASING_DATA_URL = '/Bridge_Phasing.csv';
+const PHASING_DATA_URL = '/phasing.csv';
 
 Autodesk.Viewing.Initializer({ getAccessToken }, async function () {
     const viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('preview'));

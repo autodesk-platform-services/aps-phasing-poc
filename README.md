@@ -30,6 +30,17 @@ or [macOS Terminal](https://support.apple.com/guide/terminal/welcome/mac))
 - Setup environment variables:
   - `APS_CLIENT_ID` - your APS application client ID
   - `APS_CLIENT_SECRET` - your APS application client secret
+- Specify your sample model in [./public/main.js](./public/main.js):
+  - set `DESIGN_URN` to the URN of your model translated by the Model Derivative service
+  - set `DESIGN_GUID` to the GUID of the specific view of the model you want to load into the viewer
+  - set `ACTIVITY_PROPERTY` to the name of a property that's available on your design elements; the value of this property will be used to link the element to a specific activity/phase in the CSV file below
+- Modify your sample activity/phase data in [./public/phasing.csv](./public/phasing.csv); each row should include the following 6 values:
+  - Name of the activity (used to link this phase to individual design elements); note that there may be multiple rows with the same activity name
+  - start date of the activity (in the form of `MM/DD/YY`)
+  - duration of the activity (number of days)
+  - end date of the activity (in the form of `MM/DD/YY`)
+  - type of activity (`Construct` for construction, `Demo` for demolition, or `Temp` for temporary structures); design elements will be color-coded based on this value
+  - activity description
 - Run the server: `npm start`
 
 > When using [Visual Studio Code](https://code.visualstudio.com),
