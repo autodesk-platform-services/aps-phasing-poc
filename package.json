@@ -14,7 +14,8 @@
     "@types/forge-viewer": "^7.48.0"
   },
   "dependencies": {
-    "express": "^4.17.1",
-    "forge-server-utils": "^8.3.2"
+    "@aps_sdk/authentication": "^0.1.0-beta.1",
+    "@aps_sdk/autodesk-sdkmanager": "^0.0.7-beta.1",
+    "express": "^4.17.1"
   }
 }
